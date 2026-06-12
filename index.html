@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BrewHaven — World Coffee Origins</title>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+--espresso:#1a0e08;
+--roast:#2e1a0e;
+--dark-brown:#3d2314;
+--medium-brown:#6b3e26;
+--caramel:#c47e3a;
+--gold:#d4a847;
+--cream:#f5ede0;
+--latte:#e8d5b7;
+--milk:#fdf6ec;
+--text-light:#f5ede0;
+--text-muted:rgba(245,237,224,0.55);
+--text-dark:#1a0e08;
+--transition:0.4s cubic-bezier(0.25,0.46,0.45,0.94);
+--shadow:0 8px 32px rgba(0,0,0,0.35);
+--shadow-lg:0 24px 64px rgba(0,0,0,0.5);
+--radius:14px;
+--radius-sm:8px;
+}
+
+body{background:var(--espresso);color:var(--text-light);font-family:'Outfit',sans-serif;scroll-behavior:smooth;overflow-x:hidden;cursor:default;}
+
+/* GRAIN OVERLAY */
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9998;opacity:0.035;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:128px;}
+
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-track{background:var(--roast);}
+::-webkit-scrollbar-thumb{background:var(--caramel);border-radius:20px;}
+
+/* PAGE SYSTEM */
+.page{display:none;}
+.page.active{display:block;}
+
+/* ─── PROMO BAR ─── */
+.promo-bar{position:fixed;top:0;left:0;right:0;z-index:1001;background:var(--caramel);color:var(--espresso);text-align:center;padding:0.55rem 1rem;font-size:0.68rem;letter-spacing:2.5px;text-transform:uppercase;font-weight:600;}
+.promo-bar span{opacity:0.75;margin:0 1.5rem;}
+
+/* ─── HEADER ─── */
+.bh-header{position:fixed;top:36px;left:0;right:0;z-index:1000;transition:var(--transition);}
+.bh-header.scrolled{top:0;background:rgba(26,14,8,0.97);backdrop-filter:blur(20px);border-bottom:1px solid rgba(196,126,58,0.15);}
+.nav-inner{max-width:1400px;margin:0 auto;padding:0 2.5rem;height:76px;display:flex;align-items:center;justify-content:space-between;gap:2rem;}
+.brand-wrap{cursor:pointer;display:flex;align-items:center;gap:0.75rem;}
+.brand-icon{width:36px;height:36px;background:var(--caramel);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem;color:var(--espresso);}
+.brand-text{display:flex;flex-direction:column;line-height:1;}
+.brand-name{font-family:'Libre Baskerville',serif;font-size:1.5rem;font-weight:700;color:var(--cream);letter-spacing:0.03em;}
+.brand-sub{font-size:0.48rem;letter-spacing:4px;text-transform:uppercase;color:var(--caramel);margin-top:3px;}
+.nav-links{display:flex;gap:2.5rem;}
+.nav-links a{font-size:0.68rem;letter-spacing:2.5px;text-transform:uppercase;font-weight:500;color:var(--text-muted);text-decoration:none;transition:color 0.2s;cursor:pointer;}
+.nav-links a:hover,.nav-links a.active{color:var(--gold);}
+.nav-actions{display:flex;align-items:center;gap:1rem;}
+.search-wrap{display:flex;align-items:center;background:rgba(255,255,255,0.06);border:1px solid rgba(196,126,58,0.2);border-radius:30px;padding:0.5rem 1.1rem;gap:0.6rem;transition:var(--transition);}
+.search-wrap:focus-within{border-color:var(--caramel);background:rgba(196,126,58,0.08);}
+.search-wrap input{background:none;border:none;outline:none;font-family:'Outfit',sans-serif;font-size:0.8rem;color:var(--cream);width:140px;}
+.search-wrap input::placeholder{color:var(--text-muted);}
+.search-wrap i{color:var(--text-muted);font-size:0.8rem;}
+.nav-btn{background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:1.05rem;padding:0.4rem;position:relative;transition:color 0.2s;}
+.nav-btn:hover{color:var(--gold);}
+.badge-dot{position:absolute;top:-3px;right:-3px;background:var(--caramel);color:var(--espresso);font-size:0.5rem;font-weight:700;width:15px;height:15px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;}
+.hamburger span{display:block;width:22px;height:1.5px;background:var(--cream);transition:var(--transition);}
+
+/* ─── HERO ─── */
+.hero{min-height:100vh;position:relative;display:flex;align-items:center;overflow:hidden;padding-top:112px;}
+.hero-bg{position:absolute;inset:0;}
+.hero-bg img{width:100%;height:100%;object-fit:cover;filter:brightness(0.35);}
+.hero-bg::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(26,14,8,0.9) 30%,rgba(26,14,8,0.4) 70%,transparent);}
+/* steam animation */
+.steam{position:absolute;bottom:0;left:0;right:0;height:300px;background:linear-gradient(to top,rgba(26,14,8,1),transparent);z-index:1;}
+.hero-content{position:relative;z-index:2;max-width:1400px;margin:0 auto;padding:4rem 2.5rem;width:100%;}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:0.75rem;font-size:0.65rem;letter-spacing:4px;text-transform:uppercase;color:var(--caramel);margin-bottom:1.5rem;}
+.hero-eyebrow::before,.hero-eyebrow::after{content:'';width:24px;height:1px;background:var(--caramel);}
+.hero-h1{font-family:'Libre Baskerville',serif;font-size:clamp(3.2rem,7vw,6.5rem);font-weight:700;line-height:1.0;margin-bottom:1.5rem;color:var(--cream);}
+.hero-h1 .italic{font-style:italic;color:var(--gold);}
+.hero-p{font-size:1rem;color:var(--text-muted);max-width:440px;line-height:1.75;margin-bottom:3rem;font-weight:300;}
+.hero-ctas{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:4rem;}
+.btn-gold{background:var(--caramel);color:var(--espresso);border:none;padding:0.95rem 2.4rem;border-radius:50px;font-family:'Outfit',sans-serif;font-size:0.75rem;letter-spacing:2px;text-transform:uppercase;font-weight:600;cursor:pointer;transition:var(--transition);}
+.btn-gold:hover{background:var(--gold);transform:translateY(-2px);box-shadow:0 8px 28px rgba(196,126,58,0.4);}
+.btn-ghost{background:transparent;color:var(--cream);border:1.5px solid rgba(245,237,224,0.3);padding:0.95rem 2.4rem;border-radius:50px;font-family:'Outfit',sans-serif;font-size:0.75rem;letter-spacing:2px;text-transform:uppercase;font-weight:500;cursor:pointer;transition:var(--transition);}
+.btn-ghost:hover{border-color:var(--caramel);color:var(--caramel);}
+.hero-scroll{display:flex;align-items:center;gap:1rem;color:var(--text-muted);font-size:0.68rem;letter-spacing:2px;text-transform:uppercase;}
+.scroll-line{width:48px;height:1px;background:var(--caramel);}
+/* FLOATING BEAN */
+.bean-float{position:absolute;right:10%;top:50%;transform:translateY(-50%);width:380px;height:380px;border-radius:50%;background:radial-gradient(circle at 35% 35%,var(--medium-brown),var(--roast));box-shadow:0 0 120px rgba(196,126,58,0.12),inset -30px -30px 60px rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;font-size:9rem;opacity:0.8;animation:float 6s ease-in-out infinite;}
+@keyframes float{0%,100%{transform:translateY(-50%) rotate(-3deg);}50%{transform:translateY(calc(-50% - 16px)) rotate(3deg);}}
+
+/* ─── STATS BAR ─── */
+.stats-bar{background:var(--roast);border-top:1px solid rgba(196,126,58,0.12);border-bottom:1px solid rgba(196,126,58,0.12);}
+.stats-inner{max-width:1400px;margin:0 auto;padding:1.75rem 2.5rem;display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;text-align:center;}
+.stat-item{padding:1rem;border-right:1px solid rgba(196,126,58,0.1);}
+.stat-item:last-child{border:none;}
+.stat-num{font-family:'Libre Baskerville',serif;font-size:2rem;font-weight:700;color:var(--gold);}
+.stat-label{font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--text-muted);margin-top:0.2rem;}
+
+/* ─── CAT STRIP ─── */
+.cat-strip{background:var(--dark-brown);padding:1.25rem 2.5rem;overflow-x:auto;}
+.cat-strip::-webkit-scrollbar{height:2px;}
+.cat-inner{max-width:1400px;margin:0 auto;display:flex;gap:0.5rem;justify-content:center;flex-wrap:wrap;}
+.cat-pill{background:transparent;border:1px solid rgba(196,126,58,0.25);color:var(--text-muted);padding:0.55rem 1.5rem;border-radius:50px;font-size:0.68rem;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:var(--transition);white-space:nowrap;font-family:'Outfit',sans-serif;}
+.cat-pill:hover,.cat-pill.active{background:var(--caramel);border-color:var(--caramel);color:var(--espresso);font-weight:600;}
+
+/* ─── SECTION COMMON ─── */
+.section-pad{padding:6rem 2.5rem;}
+.section-pad.dark{background:var(--espresso);}
+.section-pad.mid{background:var(--roast);}
+.section-pad.light{background:var(--dark-brown);}
+.sec-inner{max-width:1400px;margin:0 auto;}
+.sec-header{text-align:center;margin-bottom:3.5rem;}
+.sec-eye{font-size:0.62rem;letter-spacing:4px;text-transform:uppercase;color:var(--caramel);display:block;margin-bottom:0.75rem;}
+.sec-title{font-family:'Libre Baskerville',serif;font-size:clamp(2rem,4vw,3rem);color:var(--cream);line-height:1.15;}
+.sec-title .it{font-style:italic;color:var(--gold);}
+.sec-sub{color:var(--text-muted);margin-top:0.75rem;font-size:0.88rem;font-weight:300;}
+
+/* ─── PRODUCT CARD ─── */
+.filter-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:2.5rem;gap:1rem;flex-wrap:wrap;}
+.filter-tabs{display:flex;gap:0.5rem;flex-wrap:wrap;}
+.ftab{background:transparent;border:1px solid rgba(196,126,58,0.2);color:var(--text-muted);padding:0.5rem 1.2rem;border-radius:50px;font-size:0.68rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:var(--transition);font-family:'Outfit',sans-serif;}
+.ftab:hover,.ftab.active{background:var(--caramel);border-color:var(--caramel);color:var(--espresso);font-weight:600;}
+.sort-sel{background:rgba(255,255,255,0.06);border:1px solid rgba(196,126,58,0.2);color:var(--cream);padding:0.5rem 1rem;border-radius:8px;font-family:'Outfit',sans-serif;font-size:0.8rem;outline:none;cursor:pointer;}
+.sort-sel option{background:var(--dark-brown);}
+.product-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(256px,1fr));gap:1.5rem;}
+
+.product-card{background:var(--roast);border-radius:var(--radius);overflow:hidden;cursor:pointer;transition:var(--transition);position:relative;border:1px solid rgba(196,126,58,0.1);}
+.product-card:hover{transform:translateY(-6px);box-shadow:var(--shadow-lg);border-color:rgba(196,126,58,0.3);}
+.prod-img-wrap{position:relative;aspect-ratio:1;overflow:hidden;background:var(--dark-brown);}
+.prod-img-wrap img{width:100%;height:100%;object-fit:cover;transition:transform 0.7s ease;}
+.product-card:hover .prod-img-wrap img{transform:scale(1.07);}
+.prod-badge{position:absolute;top:10px;left:10px;background:var(--caramel);color:var(--espresso);font-size:0.58rem;letter-spacing:1.5px;text-transform:uppercase;padding:0.28rem 0.7rem;border-radius:50px;font-weight:700;}
+.prod-badge.new{background:var(--forest,#3d6b4b);color:#fff;}
+.prod-badge.sale{background:#8b1a1a;color:#fff;}
+.prod-actions{position:absolute;top:10px;right:10px;display:flex;flex-direction:column;gap:0.45rem;opacity:0;transform:translateX(8px);transition:var(--transition);}
+.product-card:hover .prod-actions{opacity:1;transform:translateX(0);}
+.prod-act-btn{width:34px;height:34px;border-radius:50%;background:rgba(26,14,8,0.85);border:1px solid rgba(196,126,58,0.3);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:0.8rem;color:var(--cream);transition:var(--transition);}
+.prod-act-btn:hover{background:var(--caramel);color:var(--espresso);border-color:var(--caramel);}
+.prod-act-btn.wishlisted{background:var(--caramel);color:var(--espresso);border-color:var(--caramel);}
+.quick-add-bar{position:absolute;bottom:0;left:0;right:0;background:var(--caramel);color:var(--espresso);border:none;padding:0.75rem;font-family:'Outfit',sans-serif;font-size:0.68rem;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transform:translateY(100%);transition:var(--transition);font-weight:700;}
+.product-card:hover .quick-add-bar{transform:translateY(0);}
+.quick-add-bar:hover{background:var(--gold);}
+.prod-info{padding:1.1rem 1.2rem;}
+.prod-cat{font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--caramel);margin-bottom:0.3rem;}
+.prod-name{font-family:'Libre Baskerville',serif;font-size:1.05rem;color:var(--cream);margin-bottom:0.45rem;line-height:1.3;}
+.prod-rating{display:flex;align-items:center;gap:0.4rem;margin-bottom:0.55rem;}
+.stars{color:var(--gold);font-size:0.72rem;}
+.rev-count{font-size:0.68rem;color:var(--text-muted);}
+.prod-price-row{display:flex;align-items:center;gap:0.6rem;}
+.prod-price{font-size:1rem;font-weight:600;color:var(--cream);}
+.prod-old{font-size:0.82rem;color:var(--text-muted);text-decoration:line-through;}
+.prod-disc{font-size:0.6rem;background:rgba(196,126,58,0.15);color:var(--caramel);padding:0.18rem 0.45rem;border-radius:4px;font-weight:600;}
+
+/* ─── FEATURE STRIP ─── */
+.feature-strip{background:var(--dark-brown);border-top:1px solid rgba(196,126,58,0.1);border-bottom:1px solid rgba(196,126,58,0.1);}
+.feat-inner{max-width:1400px;margin:0 auto;padding:2.5rem;display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;}
+.feat-item{display:flex;align-items:center;gap:1rem;}
+.feat-icon{font-size:1.5rem;color:var(--caramel);flex-shrink:0;}
+.feat-title{font-size:0.82rem;font-weight:600;color:var(--cream);margin-bottom:0.15rem;}
+.feat-desc{font-size:0.72rem;color:var(--text-muted);}
+@media(max-width:768px){.feat-inner{grid-template-columns:repeat(2,1fr);}.stats-inner{grid-template-columns:repeat(2,1fr);}}
+
+/* ─── TRENDING ─── */
+.trending-layout{display:grid;grid-template-columns:1.1fr 0.9fr;gap:1.5rem;}
+.trend-big{border-radius:var(--radius);overflow:hidden;position:relative;cursor:pointer;aspect-ratio:3/4;}
+.trend-big img{width:100%;height:100%;object-fit:cover;transition:transform 0.7s;}
+.trend-big:hover img{transform:scale(1.05);}
+.trend-big-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(26,14,8,0.88) 35%,transparent);}
+.trend-big-label{position:absolute;bottom:2rem;left:2rem;right:2rem;}
+.trend-big-label .t-badge{background:var(--caramel);color:var(--espresso);font-size:0.58rem;letter-spacing:2px;text-transform:uppercase;padding:0.28rem 0.75rem;border-radius:50px;font-weight:700;display:inline-block;margin-bottom:0.6rem;}
+.trend-big-label h3{font-family:'Libre Baskerville',serif;font-size:1.75rem;color:var(--cream);line-height:1.2;margin-bottom:0.3rem;}
+.trend-big-label p{font-size:0.8rem;color:var(--text-muted);}
+.trend-smalls{display:flex;flex-direction:column;gap:1.5rem;}
+.trend-sm{border-radius:var(--radius);overflow:hidden;position:relative;cursor:pointer;aspect-ratio:16/9;}
+.trend-sm img{width:100%;height:100%;object-fit:cover;transition:transform 0.6s;}
+.trend-sm:hover img{transform:scale(1.06);}
+.trend-sm-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(26,14,8,0.8) 40%,transparent);}
+.trend-sm-label{position:absolute;bottom:1.25rem;left:1.25rem;}
+.trend-sm-label h4{font-family:'Libre Baskerville',serif;font-size:1.1rem;color:var(--cream);}
+.trend-sm-label p{font-size:0.72rem;color:var(--text-muted);margin-top:0.15rem;}
+
+/* ─── BEST SELLERS CAROUSEL ─── */
+.carousel-wrap{position:relative;padding:0 1rem;}
+.carousel-outer{overflow:hidden;}
+.carousel-track{display:flex;gap:1.5rem;transition:transform 0.5s ease;}
+.carousel-track .product-card{min-width:256px;flex-shrink:0;}
+.car-btn{position:absolute;top:50%;transform:translateY(-50%);background:var(--dark-brown);border:1px solid rgba(196,126,58,0.25);border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:0.85rem;color:var(--cream);transition:var(--transition);box-shadow:var(--shadow);z-index:5;}
+.car-btn:hover{background:var(--caramel);color:var(--espresso);border-color:var(--caramel);}
+.car-btn.prev{left:-10px;}
+.car-btn.next{right:-10px;}
+
+/* ─── COFFEE STORY ─── */
+.story-grid{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center;}
+.story-img{border-radius:var(--radius);overflow:hidden;aspect-ratio:4/5;position:relative;}
+.story-img img{width:100%;height:100%;object-fit:cover;}
+.story-img::after{content:'';position:absolute;inset:0;box-shadow:inset 0 0 0 1px rgba(196,126,58,0.2);}
+.story-content{}
+.story-quote{font-family:'Libre Baskerville',serif;font-size:1.4rem;font-style:italic;color:var(--cream);line-height:1.5;margin-bottom:2rem;padding-left:1.5rem;border-left:2px solid var(--caramel);}
+.story-body{font-size:0.88rem;color:var(--text-muted);line-height:1.8;margin-bottom:2rem;font-weight:300;}
+@media(max-width:900px){.story-grid{grid-template-columns:1fr;}.trending-layout{grid-template-columns:1fr;}}
+
+/* ─── TESTIMONIALS ─── */
+.testi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.5rem;}
+.testi-card{background:var(--dark-brown);border-radius:var(--radius);padding:2rem;border:1px solid rgba(196,126,58,0.12);transition:var(--transition);}
+.testi-card:hover{border-color:rgba(196,126,58,0.3);transform:translateY(-3px);}
+.testi-stars{color:var(--gold);font-size:0.8rem;margin-bottom:1rem;}
+.testi-quote{font-family:'Libre Baskerville',serif;font-size:0.98rem;font-style:italic;color:var(--cream);line-height:1.65;margin-bottom:1.5rem;}
+.testi-author{display:flex;align-items:center;gap:0.85rem;}
+.testi-av{width:40px;height:40px;border-radius:50%;object-fit:cover;border:1.5px solid rgba(196,126,58,0.3);}
+.testi-name{font-size:0.82rem;font-weight:600;color:var(--cream);}
+.testi-meta{font-size:0.7rem;color:var(--text-muted);}
+
+/* ─── RECENTLY VIEWED ─── */
+.recent-scroll{display:flex;gap:1.25rem;overflow-x:auto;padding-bottom:0.5rem;}
+.recent-scroll::-webkit-scrollbar{height:3px;}
+.recent-scroll::-webkit-scrollbar-thumb{background:var(--caramel);}
+.recent-scroll .product-card{min-width:220px;flex-shrink:0;}
+
+/* ─── NEWSLETTER ─── */
+.nl-section{background:var(--dark-brown);padding:6rem 2.5rem;position:relative;overflow:hidden;}
+.nl-section::before{content:'☕';position:absolute;right:-2rem;top:50%;transform:translateY(-50%);font-size:20rem;opacity:0.04;line-height:1;}
+.nl-inner{max-width:580px;margin:0 auto;text-align:center;position:relative;z-index:1;}
+.nl-eye{font-size:0.62rem;letter-spacing:4px;text-transform:uppercase;color:var(--caramel);display:block;margin-bottom:0.75rem;}
+.nl-title{font-family:'Libre Baskerville',serif;font-size:2.6rem;color:var(--cream);line-height:1.2;margin-bottom:1rem;}
+.nl-sub{color:var(--text-muted);font-size:0.88rem;margin-bottom:2.5rem;font-weight:300;}
+.nl-form{display:flex;gap:0;border-radius:50px;overflow:hidden;border:1px solid rgba(196,126,58,0.3);background:rgba(255,255,255,0.04);}
+.nl-form input{flex:1;background:transparent;border:none;padding:1rem 1.5rem;font-family:'Outfit',sans-serif;font-size:0.88rem;color:var(--cream);outline:none;}
+.nl-form input::placeholder{color:var(--text-muted);}
+.nl-form button{background:var(--caramel);color:var(--espresso);border:none;padding:1rem 1.75rem;font-family:'Outfit',sans-serif;font-size:0.68rem;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:background 0.2s;font-weight:700;white-space:nowrap;}
+.nl-form button:hover{background:var(--gold);}
+
+/* ─── FAQ ─── */
+.faq-list{max-width:740px;margin:0 auto;display:flex;flex-direction:column;gap:0.6rem;}
+.faq-item{background:var(--dark-brown);border:1px solid rgba(196,126,58,0.12);border-radius:var(--radius-sm);overflow:hidden;}
+.faq-item.open{border-color:rgba(196,126,58,0.35);}
+.faq-q{display:flex;align-items:center;justify-content:space-between;padding:1.2rem 1.4rem;cursor:pointer;gap:1rem;}
+.faq-q h4{font-family:'Libre Baskerville',serif;font-size:1rem;color:var(--cream);}
+.faq-ico{color:var(--caramel);transition:transform 0.3s;flex-shrink:0;}
+.faq-item.open .faq-ico{transform:rotate(45deg);}
+.faq-ans{max-height:0;overflow:hidden;transition:max-height 0.4s ease,padding 0.3s;}
+.faq-item.open .faq-ans{max-height:240px;padding:0 1.4rem 1.2rem;}
+.faq-ans p{font-size:0.85rem;color:var(--text-muted);line-height:1.75;}
+
+/* ─── FOOTER ─── */
+.bh-footer{background:var(--espresso);border-top:1px solid rgba(196,126,58,0.1);padding:5rem 2.5rem 2rem;}
+.footer-inner{max-width:1400px;margin:0 auto;}
+.footer-grid{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:4rem;margin-bottom:4rem;}
+.f-brand-name{font-family:'Libre Baskerville',serif;font-size:1.75rem;color:var(--cream);margin-bottom:0.75rem;}
+.f-brand-desc{font-size:0.82rem;line-height:1.75;color:var(--text-muted);margin-bottom:1.5rem;max-width:260px;}
+.f-socials{display:flex;gap:0.65rem;}
+.f-social{width:34px;height:34px;border-radius:50%;border:1px solid rgba(196,126,58,0.2);display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:0.8rem;text-decoration:none;transition:var(--transition);}
+.f-social:hover{background:var(--caramel);border-color:var(--caramel);color:var(--espresso);}
+.f-col-title{font-size:0.62rem;letter-spacing:3px;text-transform:uppercase;color:var(--cream);margin-bottom:1.4rem;font-weight:600;}
+.f-links{display:flex;flex-direction:column;gap:0.7rem;}
+.f-links a{font-size:0.82rem;color:var(--text-muted);text-decoration:none;transition:color 0.2s;cursor:pointer;}
+.f-links a:hover{color:var(--caramel);}
+.f-bottom{border-top:1px solid rgba(196,126,58,0.08);padding-top:1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;}
+.f-copy{font-size:0.75rem;color:var(--text-muted);}
+.f-pay{display:flex;gap:0.6rem;}
+.pay-tag{background:rgba(255,255,255,0.05);border-radius:5px;padding:0.3rem 0.65rem;font-size:0.68rem;color:var(--text-muted);}
+@media(max-width:1024px){.footer-grid{grid-template-columns:1fr 1fr;gap:2.5rem;}}
+@media(max-width:600px){.footer-grid{grid-template-columns:1fr;gap:2rem;}}
+
+/* ─── CART SIDEBAR ─── */
+.cart-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:2000;opacity:0;pointer-events:none;transition:opacity 0.3s;backdrop-filter:blur(4px);}
+.cart-overlay.open{opacity:1;pointer-events:all;}
+.cart-sidebar{position:fixed;top:0;right:0;width:400px;max-width:100%;height:100%;background:var(--roast);z-index:2001;transform:translateX(100%);transition:transform 0.4s cubic-bezier(0.25,0.46,0.45,0.94);display:flex;flex-direction:column;border-left:1px solid rgba(196,126,58,0.15);}
+.cart-sidebar.open{transform:translateX(0);}
+.cart-hdr{display:flex;align-items:center;justify-content:space-between;padding:1.75rem;border-bottom:1px solid rgba(196,126,58,0.12);}
+.cart-hdr h3{font-family:'Libre Baskerville',serif;font-size:1.4rem;color:var(--cream);}
+.cart-close-btn{background:none;border:none;cursor:pointer;font-size:1rem;color:var(--text-muted);padding:0.4rem;transition:color 0.2s;}
+.cart-close-btn:hover{color:var(--caramel);}
+.cart-body{flex:1;overflow-y:auto;padding:1.25rem;}
+.cart-empty-state{text-align:center;padding:4rem 2rem;color:var(--text-muted);}
+.cart-empty-state i{font-size:3rem;color:rgba(196,126,58,0.2);margin-bottom:1rem;display:block;}
+.cart-item{display:flex;gap:0.85rem;padding:0.9rem 0;border-bottom:1px solid rgba(196,126,58,0.08);}
+.cart-item:last-child{border:none;}
+.ci-img{width:68px;height:68px;border-radius:var(--radius-sm);object-fit:cover;background:var(--dark-brown);}
+.ci-info{flex:1;}
+.ci-name{font-family:'Libre Baskerville',serif;font-size:0.92rem;color:var(--cream);margin-bottom:0.2rem;}
+.ci-cat{font-size:0.65rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--caramel);margin-bottom:0.45rem;}
+.ci-qty-row{display:flex;align-items:center;gap:0.65rem;}
+.ci-qty-btn{width:26px;height:26px;border-radius:50%;border:1px solid rgba(196,126,58,0.25);background:transparent;cursor:pointer;font-size:0.8rem;display:flex;align-items:center;justify-content:center;color:var(--cream);transition:var(--transition);}
+.ci-qty-btn:hover{background:var(--caramel);color:var(--espresso);}
+.ci-qty-num{font-size:0.85rem;font-weight:600;color:var(--cream);width:22px;text-align:center;}
+.ci-price{font-weight:600;color:var(--cream);font-size:0.9rem;align-self:center;}
+.ci-remove{background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:0.8rem;align-self:flex-start;margin-top:0.2rem;transition:color 0.2s;}
+.ci-remove:hover{color:var(--caramel);}
+.cart-ftr{padding:1.25rem 1.5rem;border-top:1px solid rgba(196,126,58,0.12);}
+.cart-sub-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;}
+.cart-sub-lbl{font-size:0.82rem;color:var(--text-muted);}
+.cart-sub-val{font-family:'Libre Baskerville',serif;font-size:1.35rem;color:var(--cream);}
+.cart-cta{width:100%;background:var(--caramel);color:var(--espresso);border:none;padding:1rem;border-radius:50px;font-family:'Outfit',sans-serif;font-size:0.72rem;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:var(--transition);font-weight:700;margin-top:1rem;}
+.cart-cta:hover{background:var(--gold);transform:translateY(-1px);}
+.cart-back{width:100%;background:transparent;color:var(--text-muted);border:none;padding:0.65rem;font-family:'Outfit',sans-serif;font-size:0.72rem;cursor:pointer;margin-top:0.4rem;transition:color 0.2s;}
+.cart-back:hover{color:var(--caramel);}
+
+/* ─── QUICK VIEW ─── */
+.qv-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:3000;opacity:0;pointer-events:none;transition:opacity 0.3s;backdrop-filter:blur(8px);}
+.qv-overlay.open{opacity:1;pointer-events:all;}
+.qv-modal{position:fixed;top:50%;left:50%;transform:translate(-50%,-44%);width:860px;max-width:95vw;max-height:90vh;overflow-y:auto;background:var(--roast);border-radius:20px;border:1px solid rgba(196,126,58,0.2);z-index:3001;opacity:0;transition:opacity 0.3s,transform 0.4s;}
+.qv-overlay.open .qv-modal{opacity:1;transform:translate(-50%,-50%);}
+.qv-close{position:absolute;top:1rem;right:1rem;background:rgba(255,255,255,0.06);border:1px solid rgba(196,126,58,0.2);width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:0.85rem;color:var(--cream);z-index:5;display:flex;align-items:center;justify-content:center;transition:var(--transition);}
+.qv-close:hover{background:var(--caramel);color:var(--espresso);}
+.qv-body{display:grid;grid-template-columns:1fr 1fr;}
+.qv-img{background:var(--dark-brown);border-radius:20px 0 0 20px;overflow:hidden;}
+.qv-img img{width:100%;height:100%;object-fit:cover;min-height:420px;}
+.qv-info{padding:2.5rem 2rem;display:flex;flex-direction:column;justify-content:center;}
+.qv-cat-lbl{font-size:0.6rem;letter-spacing:3px;text-transform:uppercase;color:var(--caramel);margin-bottom:0.5rem;}
+.qv-name{font-family:'Libre Baskerville',serif;font-size:1.8rem;color:var(--cream);line-height:1.2;margin-bottom:0.75rem;}
+.qv-rating-row{display:flex;align-items:center;gap:0.5rem;margin-bottom:1.25rem;}
+.qv-price-row{display:flex;align-items:center;gap:0.75rem;margin-bottom:1.25rem;}
+.qv-price{font-size:1.5rem;font-weight:700;color:var(--cream);}
+.qv-old-price{font-size:0.95rem;color:var(--text-muted);text-decoration:line-through;}
+.qv-desc{font-size:0.85rem;color:var(--text-muted);line-height:1.75;margin-bottom:2rem;}
+.qv-btns{display:flex;gap:0.75rem;}
+.qv-add{flex:1;background:var(--caramel);color:var(--espresso);border:none;padding:0.9rem;border-radius:50px;font-family:'Outfit',sans-serif;font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:var(--transition);font-weight:700;}
+.qv-add:hover{background:var(--gold);}
+.qv-wish{width:46px;height:46px;border-radius:50%;border:1.5px solid rgba(196,126,58,0.3);background:transparent;cursor:pointer;font-size:0.95rem;color:var(--text-muted);display:flex;align-items:center;justify-content:center;transition:var(--transition);}
+.qv-wish:hover{border-color:var(--caramel);color:var(--caramel);}
+@media(max-width:680px){.qv-body{grid-template-columns:1fr;}.qv-img{border-radius:20px 20px 0 0;}.qv-img img{min-height:220px;}}
+
+/* ─── ORDER SUCCESS ─── */
+.success-page{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:2rem;background:var(--espresso);}
+.success-card{background:var(--roast);border-radius:24px;padding:4rem 3rem;text-align:center;max-width:520px;width:100%;border:1px solid rgba(196,126,58,0.2);box-shadow:var(--shadow-lg);}
+.suc-icon{width:76px;height:76px;border-radius:50%;background:rgba(196,126,58,0.12);display:flex;align-items:center;justify-content:center;margin:0 auto 2rem;font-size:1.8rem;color:var(--caramel);}
+.suc-title{font-family:'Libre Baskerville',serif;font-size:2rem;color:var(--cream);margin-bottom:0.75rem;}
+.suc-sub{color:var(--text-muted);font-size:0.88rem;line-height:1.7;margin-bottom:2rem;}
+.suc-order-id{background:rgba(196,126,58,0.1);border:1px solid rgba(196,126,58,0.2);border-radius:var(--radius-sm);padding:0.85rem 1.5rem;display:inline-block;font-size:0.78rem;color:var(--caramel);letter-spacing:1.5px;margin-bottom:2rem;font-weight:600;}
+.suc-details{background:var(--dark-brown);border-radius:var(--radius-sm);padding:1.4rem;margin-bottom:2rem;text-align:left;}
+.suc-row{display:flex;justify-content:space-between;padding:0.45rem 0;border-bottom:1px solid rgba(196,126,58,0.08);font-size:0.83rem;color:var(--text-muted);}
+.suc-row:last-child{border:none;color:var(--cream);font-weight:600;}
+
+/* ─── CHECKOUT PAGE ─── */
+.checkout-pg{min-height:100vh;padding:8rem 2.5rem 4rem;background:var(--espresso);}
+.co-inner{max-width:1050px;margin:0 auto;display:grid;grid-template-columns:1fr 380px;gap:3rem;align-items:start;}
+.co-form h2{font-family:'Libre Baskerville',serif;font-size:1.9rem;color:var(--cream);margin-bottom:2rem;}
+.fgrp{margin-bottom:1.1rem;}
+.fgrp label{display:block;font-size:0.68rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--caramel);margin-bottom:0.4rem;font-weight:500;}
+.fgrp input,.fgrp select{width:100%;background:var(--dark-brown);border:1px solid rgba(196,126,58,0.18);border-radius:var(--radius-sm);padding:0.85rem 1rem;font-family:'Outfit',sans-serif;font-size:0.88rem;color:var(--cream);outline:none;transition:var(--transition);}
+.fgrp input:focus,.fgrp select:focus{border-color:var(--caramel);}
+.fgrp select option{background:var(--dark-brown);}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+.co-summary{background:var(--roast);border-radius:var(--radius);padding:1.75rem;border:1px solid rgba(196,126,58,0.15);position:sticky;top:100px;}
+.co-summary h3{font-family:'Libre Baskerville',serif;font-size:1.3rem;color:var(--cream);margin-bottom:1.4rem;}
+.co-item{display:flex;gap:0.85rem;padding:0.7rem 0;border-bottom:1px solid rgba(196,126,58,0.08);}
+.co-item:last-child{border:none;}
+.co-item img{width:50px;height:50px;border-radius:var(--radius-sm);object-fit:cover;background:var(--dark-brown);}
+.co-item-info{flex:1;font-size:0.82rem;}
+.co-item-name{color:var(--cream);font-weight:500;margin-bottom:0.1rem;}
+.co-item-qty{color:var(--text-muted);}
+.co-item-price{align-self:center;color:var(--cream);font-weight:600;}
+.co-totals{padding-top:1rem;border-top:1px solid rgba(196,126,58,0.1);margin-top:0.5rem;}
+.co-total-row{display:flex;justify-content:space-between;font-size:0.82rem;padding:0.35rem 0;color:var(--text-muted);}
+.co-total-row.final{color:var(--cream);font-size:0.95rem;font-weight:700;border-top:1px solid rgba(196,126,58,0.15);margin-top:0.5rem;padding-top:0.75rem;}
+@media(max-width:900px){.co-inner{grid-template-columns:1fr;}.frow{grid-template-columns:1fr;}}
+
+/* ─── TOAST ─── */
+.toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(80px);background:var(--dark-brown);color:var(--cream);padding:0.85rem 1.75rem;border-radius:50px;font-size:0.8rem;font-weight:500;z-index:9999;opacity:0;transition:all 0.4s cubic-bezier(0.34,1.56,0.64,1);display:flex;align-items:center;gap:0.6rem;pointer-events:none;border:1px solid rgba(196,126,58,0.25);white-space:nowrap;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.toast i{color:var(--caramel);}
+
+/* ─── MOBILE NAV ─── */
+.mob-nav{position:fixed;top:0;left:0;right:0;bottom:0;background:var(--espresso);z-index:1500;transform:translateX(-100%);transition:transform 0.4s;padding:5rem 2.5rem 2rem;display:flex;flex-direction:column;gap:2rem;border-right:1px solid rgba(196,126,58,0.1);}
+.mob-nav.open{transform:translateX(0);}
+.mob-nav a{font-family:'Libre Baskerville',serif;font-size:2rem;color:var(--text-muted);text-decoration:none;cursor:pointer;transition:color 0.2s;}
+.mob-nav a:hover{color:var(--caramel);}
+.mob-nav-close{position:absolute;top:1.5rem;right:1.5rem;background:none;border:none;color:var(--text-muted);font-size:1.2rem;cursor:pointer;}
+
+@media(max-width:768px){
+.nav-links,.search-wrap{display:none;}
+.hamburger{display:flex;}
+.hero-h1{font-size:2.8rem;}
+.bean-float{display:none;}
+.section-pad{padding:4rem 1.25rem;}
+.product-grid{grid-template-columns:repeat(2,1fr);gap:1rem;}
+.cart-sidebar{width:100%;}
+}
+@media(max-width:480px){
+.product-grid{grid-template-columns:1fr;}
+.nav-inner{padding:0 1rem;}
+}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(28px);}to{opacity:1;transform:translateY(0);}}
+.fade-up{animation:fadeUp 0.7s ease both;}
+.d1{animation-delay:0.1s;}.d2{animation-delay:0.2s;}.d3{animation-delay:0.3s;}.d4{animation-delay:0.4s;}
+</style>
+</head>
+<body>
+
+<!-- PROMO BAR -->
+<div class="promo-bar">☕ Free shipping on orders above ₹999 <span>|</span> Use BREW20 for 20% off your first order <span>|</span> New roast drops every Friday</div>
+
+<!-- MOBILE NAV -->
+<div class="mob-nav" id="mobNav">
+  <button class="mob-nav-close" onclick="closeMobNav()"><i class="fas fa-times"></i></button>
+  <a onclick="showPage('home');closeMobNav()">Home</a>
+  <a onclick="scrollProds();closeMobNav()">Shop</a>
+  <a onclick="closeMobNav()">Our Story</a>
+  <a onclick="closeMobNav()">Sourcing</a>
+  <a onclick="closeMobNav()">Blog</a>
+</div>
+
+<!-- HEADER -->
+<header class="bh-header" id="bhHeader">
+  <div class="nav-inner">
+    <div class="brand-wrap" onclick="showPage('home')">
+      <div class="brand-icon">☕</div>
+      <div class="brand-text">
+        <span class="brand-name">BrewHaven</span>
+        <span class="brand-sub">Specialty Roasters</span>
+      </div>
+    </div>
+    <nav class="nav-links">
+      <a onclick="showPage('home')" class="active">Home</a>
+      <a onclick="scrollProds()">Shop</a>
+      <a>Our Story</a>
+      <a>Sourcing</a>
+      <a>Blog</a>
+    </nav>
+    <div class="nav-actions">
+      <div class="search-wrap">
+        <i class="fas fa-search"></i>
+        <input type="text" placeholder="Search coffees..." id="searchInput" oninput="handleSearch(this.value)">
+      </div>
+      <button class="nav-btn" style="position:relative" onclick="showPage('home');scrollProds()">
+        <i class="far fa-heart"></i>
+        <span class="badge-dot" id="wlCount" style="display:none">0</span>
+      </button>
+      <button class="nav-btn" style="position:relative" onclick="openCart()">
+        <i class="fas fa-shopping-bag"></i>
+        <span class="badge-dot" id="cartBadge" style="display:none">0</span>
+      </button>
+      <div class="hamburger" onclick="openMobNav()"><span></span><span></span><span></span></div>
+    </div>
+  </div>
+</header>
+
+<!-- ═══ HOME PAGE ═══ -->
+<div class="page active" id="home">
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg">
+    <img src="https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=1800&q=80" alt="Coffee Beans">
+  </div>
+  <div class="steam"></div>
+  <div class="hero-content">
+    <p class="hero-eyebrow fade-up">World Coffee Origins · Est. 2018</p>
+    <h1 class="hero-h1 fade-up d1">From seed to<br><span class="italic">cup</span></h1>
+    <p class="hero-p fade-up d2">Single-origin beans from Ethiopia to Colombia, Coorg to Sumatra. We travel to the source, roast with restraint, and deliver the world's finest coffees to your door.</p>
+    <div class="hero-ctas fade-up d3">
+      <button class="btn-gold" onclick="scrollProds()">Explore Our Origins</button>
+      <button class="btn-ghost" onclick="scrollToSec('story-sec')">Our Sourcing Story</button>
+    </div>
+    <div class="hero-scroll fade-up d4"><div class="scroll-line"></div>Scroll to explore</div>
+  </div>
+  <div class="bean-float">☕</div>
+</section>
+
+<!-- STATS BAR -->
+<div class="stats-bar">
+  <div class="stats-inner">
+    <div class="stat-item"><div class="stat-num">22+</div><div class="stat-label">Origins Sourced</div></div>
+    <div class="stat-item"><div class="stat-num">32k+</div><div class="stat-label">Happy Brewers</div></div>
+    <div class="stat-item"><div class="stat-num">4.9★</div><div class="stat-label">Average Rating</div></div>
+    <div class="stat-item"><div class="stat-num">100%</div><div class="stat-label">Direct Trade</div></div>
+  </div>
+</div>
+
+<!-- FEATURE STRIP -->
+<div class="feature-strip">
+  <div class="feat-inner">
+    <div class="feat-item"><div class="feat-icon"><i class="fas fa-fire"></i></div><div><div class="feat-title">Roasted to Order</div><div class="feat-desc">Fresh-roasted within 48 hours of shipping</div></div></div>
+    <div class="feat-item"><div class="feat-icon"><i class="fas fa-globe"></i></div><div><div class="feat-title">22 Origins</div><div class="feat-desc">Direct trade with farms across 5 continents</div></div></div>
+    <div class="feat-item"><div class="feat-icon"><i class="fas fa-box"></i></div><div><div class="feat-title">Free Delivery</div><div class="feat-desc">On orders above ₹999 across India</div></div></div>
+    <div class="feat-item"><div class="feat-icon"><i class="fas fa-undo"></i></div><div><div class="feat-title">Satisfaction Guaranteed</div><div class="feat-desc">Not happy? We'll make it right</div></div></div>
+  </div>
+</div>
+
+<!-- CAT STRIP -->
+<div class="cat-strip">
+  <div class="cat-inner" id="catStrip">
+    <button class="cat-pill active" onclick="filterCat('all',this)">All Coffees</button>
+    <button class="cat-pill" onclick="filterCat('Single Origin',this)">Single Origins</button>
+    <button class="cat-pill" onclick="filterCat('Espresso Blend',this)">Espresso Blends</button>
+    <button class="cat-pill" onclick="filterCat('Cold Brew',this)">Cold Brew</button>
+    <button class="cat-pill" onclick="filterCat('Decaf',this)">Decaf</button>
+    <button class="cat-pill" onclick="filterCat('Rare & Reserve',this)">Rare &amp; Reserve</button>
+  </div>
+</div>
+
+<!-- PRODUCTS -->
+<section class="section-pad dark" id="products">
+  <div class="sec-inner">
+    <div class="sec-header">
+      <span class="sec-eye">The Roastery</span>
+      <h2 class="sec-title">Coffees from around the <span class="it">world</span></h2>
+      <p class="sec-sub">Single-origins, espresso blends, cold brews and rare lots — every bean tells a story of its terroir</p>
+    </div>
+    <div class="filter-bar">
+      <div class="filter-tabs" id="filterTabs">
+        <button class="ftab active" onclick="filterTag('all',this)">All</button>
+        <button class="ftab" onclick="filterTag('bestseller',this)">Best Sellers</button>
+        <button class="ftab" onclick="filterTag('new',this)">New Arrivals</button>
+        <button class="ftab" onclick="filterTag('sale',this)">On Sale</button>
+      </div>
+      <select class="sort-sel" onchange="sortProds(this.value)">
+        <option value="default">Featured</option>
+        <option value="price-asc">Price: Low to High</option>
+        <option value="price-desc">Price: High to Low</option>
+        <option value="rating">Top Rated</option>
+      </select>
+    </div>
+    <div class="product-grid" id="productGrid"></div>
+  </div>
+</section>
+
+<!-- TRENDING -->
+<section class="section-pad mid" id="trending">
+  <div class="sec-inner">
+    <div class="sec-header">
+      <span class="sec-eye">Right Now</span>
+      <h2 class="sec-title">What's <span class="it">trending</span></h2>
+    </div>
+      <div class="trending-layout">
+      <div class="trend-big" onclick="openQV(0)">
+        <img src="https://images.unsplash.com/photo-1510707577719-ae7c14805e3a?w=900&q=80" alt="">
+        <div class="trend-big-overlay"></div>
+        <div class="trend-big-label">
+          <span class="t-badge">🔥 Trending #1</span>
+          <h3>Ethiopia Yirgacheffe</h3>
+          <p>Natural process · Blueberry & jasmine notes</p>
+        </div>
+      </div>
+      <div class="trend-smalls">
+        <div class="trend-sm" onclick="openQV(6)">
+          <img src="https://images.unsplash.com/photo-1611854779393-1b2da9d400fe?w=700&q=80" alt="">
+          <div class="trend-sm-overlay"></div>
+          <div class="trend-sm-label"><h4>Colombia Huila</h4><p>Single Origin · Washed</p></div>
+        </div>
+        <div class="trend-sm" onclick="openQV(11)">
+          <img src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=700&q=80" alt="">
+          <div class="trend-sm-overlay"></div>
+          <div class="trend-sm-label"><h4>Monsoon Malabar Blend</h4><p>Espresso Blend · Bold & Spicy</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BEST SELLERS -->
+<section class="section-pad dark" id="bestsellers">
+  <div class="sec-inner">
+    <div class="sec-header">
+      <span class="sec-eye">Customer Favourites</span>
+      <h2 class="sec-title">Best <span class="it">Sellers</span></h2>
+    </div>
+    <div class="carousel-wrap">
+      <button class="car-btn prev" onclick="moveCar(-1)"><i class="fas fa-chevron-left"></i></button>
+      <div class="carousel-outer">
+        <div class="carousel-track" id="bsTrack"></div>
+      </div>
+      <button class="car-btn next" onclick="moveCar(1)"><i class="fas fa-chevron-right"></i></button>
+    </div>
+  </div>
+</section>
+
+<!-- STORY -->
+<section class="section-pad mid" id="story-sec">
+  <div class="sec-inner">
+    <div class="story-grid">
+      <div class="story-img"><img src="https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=800&q=80" alt="Coffee Farm"></div>
+      <div class="story-content">
+        <span class="sec-eye">Our Philosophy</span>
+        <blockquote class="story-quote">"Great coffee is grown, not made. We just try not to ruin it."</blockquote>
+        <p class="story-body">We travel to origin — the misty highlands of Coorg, the volcanic soils of Araku, the ancient forests of Ethiopia's Yirgacheffe zone, the fog-drenched slopes of Colombia's Huila department — to build direct relationships with farmers who share our obsession. Every bean is traceable to the exact farm, lot, and harvest season.</p>
+        <p class="story-body" style="margin-bottom:0;">Our roasting philosophy is restrained: we roast to reveal the terroir, not to impose a house character. Each profile is dialled in over weeks to honour the unique personality of each origin — whether that's the winey brightness of a natural-processed Ethiopian or the clean, caramel sweetness of a washed Guatemalan.</p>
+        <br>
+        <button class="btn-gold" onclick="scrollProds()">Explore Our Roasts</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="section-pad dark">
+  <div class="sec-inner">
+    <div class="sec-header">
+      <span class="sec-eye">Community</span>
+      <h2 class="sec-title">From our <span class="it">brewers</span></h2>
+    </div>
+    <div class="testi-grid">
+      <div class="testi-card">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-quote">"The Ethiopia Yirgacheffe is unlike anything I've ever tasted. That blueberry note hits right on the nose. I brew it as pour-over every morning and it never gets old."</p>
+        <div class="testi-author"><img class="testi-av" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&q=80" alt=""><div><div class="testi-name">Rohan Mathur</div><div class="testi-meta">Pour-over Enthusiast · Bangalore</div></div></div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-quote">"The Coorg Dark Roast single-origin blew my mind. I was a supermarket coffee person for years — BrewHaven ruined that for me forever, in the best way possible."</p>
+        <div class="testi-author"><img class="testi-av" src="https://images.unsplash.com/photo-1494790108755-2616b612b786?w=80&q=80" alt=""><div><div class="testi-name">Sneha Pillai</div><div class="testi-meta">Home Barista · Kochi</div></div></div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-quote">"BrewHaven's fortnightly subscription is life-changing. A different origin every two weeks, always freshly roasted, with detailed tasting notes. I've discovered 12 new favourites."</p>
+        <div class="testi-author"><img class="testi-av" src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=80&q=80" alt=""><div><div class="testi-name">Priyanka Nair</div><div class="testi-meta">Verified Subscriber · Mumbai</div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RECENTLY VIEWED -->
+<section class="section-pad mid" id="recentSec" style="display:none">
+  <div class="sec-inner">
+    <div class="sec-header">
+      <span class="sec-eye">Your Trail</span>
+      <h2 class="sec-title">Recently <span class="it">Viewed</span></h2>
+    </div>
+    <div class="recent-scroll" id="recentGrid"></div>
+  </div>
+</section>
+
+<!-- NEWSLETTER -->
+<div class="nl-section">
+  <div class="nl-inner">
+    <span class="nl-eye">Stay in the Loop</span>
+    <h2 class="nl-title">Join the BrewHaven circle</h2>
+    <p class="nl-sub">New origin drops, brewing guides, farm stories, harvest reports, and exclusive subscriber discounts — straight to your inbox every fortnight.</p>
+    <div class="nl-form">
+      <input type="email" placeholder="your@email.com">
+      <button onclick="subNewsletter()">Subscribe</button>
+    </div>
+  </div>
+</div>
+
+<!-- FAQ -->
+<section class="section-pad dark">
+  <div class="sec-inner">
+    <div class="sec-header">
+      <span class="sec-eye">Got Questions?</span>
+      <h2 class="sec-title">We've got <span class="it">answers</span></h2>
+    </div>
+    <div class="faq-list" id="faqList"></div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="bh-footer">
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div>
+        <div class="f-brand-name">BrewHaven</div>
+        <p class="f-brand-desc">Specialty roasters obsessed with transparency, terroir, and the perfect cup. Roasted to order, shipped with care.</p>
+        <div class="f-socials">
+          <a class="f-social" href="#"><i class="fab fa-instagram"></i></a>
+          <a class="f-social" href="#"><i class="fab fa-youtube"></i></a>
+          <a class="f-social" href="#"><i class="fab fa-twitter"></i></a>
+          <a class="f-social" href="#"><i class="fab fa-pinterest"></i></a>
+        </div>
+      </div>
+      <div>
+        <div class="f-col-title">Shop</div>
+        <div class="f-links">
+          <a>Single Origins</a>
+          <a>Espresso Blends</a>
+          <a>Cold Brew</a>
+          <a>Rare &amp; Reserve</a>
+          <a>Subscriptions</a>
+        </div>
+      </div>
+      <div>
+        <div class="f-col-title">Company</div>
+        <div class="f-links">
+          <a>Our Story</a>
+          <a>Sourcing</a>
+          <a>Sustainability</a>
+          <a>Blog</a>
+          <a>Careers</a>
+        </div>
+      </div>
+      <div>
+        <div class="f-col-title">Support</div>
+        <div class="f-links">
+          <a>Track Order</a>
+          <a>Returns</a>
+          <a>Brewing Guides</a>
+          <a>Privacy Policy</a>
+          <a>Contact Us</a>
+        </div>
+      </div>
+    </div>
+    <div class="f-bottom">
+      <span class="f-copy">© 2025 BrewHaven Specialty Roasters. All rights reserved.</span>
+      <div class="f-pay"><span class="pay-tag">Visa</span><span class="pay-tag">Mastercard</span><span class="pay-tag">UPI</span><span class="pay-tag">RazorPay</span></div>
+    </div>
+  </div>
+</footer>
+</div><!-- end home -->
+
+<!-- ═══ CHECKOUT PAGE ═══ -->
+<div class="page" id="checkout">
+  <div class="checkout-pg">
+    <div class="co-inner">
+      <div class="co-form">
+        <h2>Secure Checkout</h2>
+        <div class="fgrp"><label>Full Name</label><input type="text" placeholder="Rohan Mathur"></div>
+        <div class="fgrp"><label>Email</label><input type="email" placeholder="rohan@example.com"></div>
+        <div class="frow">
+          <div class="fgrp"><label>Phone</label><input type="tel" placeholder="+91 98765 43210"></div>
+          <div class="fgrp"><label>Pincode</label><input type="text" placeholder="560001"></div>
+        </div>
+        <div class="fgrp"><label>Street Address</label><input type="text" placeholder="House / Flat, Street, Area"></div>
+        <div class="frow">
+          <div class="fgrp"><label>City</label><input type="text" placeholder="Bangalore"></div>
+          <div class="fgrp"><label>State</label><select><option>Select State</option><option>Karnataka</option><option>Maharashtra</option><option>Delhi</option><option>Tamil Nadu</option><option>Kerala</option></select></div>
+        </div>
+        <div style="margin-top:1.5rem">
+          <div class="sec-eye" style="margin-bottom:1rem;text-align:left">Payment</div>
+          <div class="fgrp"><label>Card Number</label><input type="text" placeholder="4242 4242 4242 4242"></div>
+          <div class="frow">
+            <div class="fgrp"><label>Expiry</label><input type="text" placeholder="MM / YY"></div>
+            <div class="fgrp"><label>CVV</label><input type="text" placeholder="•••"></div>
+          </div>
+        </div>
+        <button class="btn-gold" style="width:100%;margin-top:1.5rem;padding:1.05rem;" onclick="placeOrder()">Place Order →</button>
+        <button class="btn-ghost" style="width:100%;margin-top:0.75rem;padding:0.85rem;" onclick="showPage('home');openCart()">← Back to Cart</button>
+      </div>
+      <div class="co-summary">
+        <h3>Your Order</h3>
+        <div id="coItems"></div>
+        <div class="co-totals" id="coTotals"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ ORDER SUCCESS PAGE ═══ -->
+<div class="page" id="success">
+  <div class="success-page">
+    <div class="success-card">
+      <div class="suc-icon"><i class="fas fa-check"></i></div>
+      <h2 class="suc-title">Order Confirmed!</h2>
+      <p class="suc-sub">Your beans are being freshly roasted and carefully packed. Expect the finest cup of your life in 3–5 business days.</p>
+      <div class="suc-order-id" id="sucOrderId">Order #BH-000000</div>
+      <div class="suc-details" id="sucDetails"></div>
+      <button class="btn-gold" onclick="showPage('home');clearCart()">Continue Shopping</button>
+    </div>
+  </div>
+</div>
+
+<!-- CART OVERLAY + SIDEBAR -->
+<div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
+<div class="cart-sidebar" id="cartSidebar">
+  <div class="cart-hdr">
+    <h3>Your Cart</h3>
+    <button class="cart-close-btn" onclick="closeCart()"><i class="fas fa-times"></i></button>
+  </div>
+  <div class="cart-body" id="cartBody"></div>
+  <div class="cart-ftr">
+    <div class="cart-sub-row"><span class="cart-sub-lbl">Subtotal</span><span class="cart-sub-val" id="cartSub">₹0</span></div>
+    <div style="font-size:0.72rem;color:var(--text-muted);margin-top:0.2rem">Shipping calculated at checkout</div>
+    <button class="cart-cta" onclick="goCheckout()">Proceed to Checkout</button>
+    <button class="cart-back" onclick="closeCart()">Continue Shopping</button>
+  </div>
+</div>
+
+<!-- QUICK VIEW -->
+<div class="qv-overlay" id="qvOverlay" onclick="closeQV(event)">
+  <div class="qv-modal" id="qvModal">
+    <button class="qv-close" onclick="document.getElementById('qvOverlay').classList.remove('open');document.body.style.overflow=''"><i class="fas fa-times"></i></button>
+    <div class="qv-body">
+      <div class="qv-img"><img id="qvImg" src="" alt=""></div>
+      <div class="qv-info">
+        <div class="qv-cat-lbl" id="qvCat"></div>
+        <h2 class="qv-name" id="qvName"></h2>
+        <div class="qv-rating-row"><span class="stars" id="qvStars"></span><span id="qvRevs" style="font-size:0.78rem;color:var(--text-muted)"></span></div>
+        <div class="qv-price-row"><span class="qv-price" id="qvPrice"></span><span class="qv-old-price" id="qvOld"></span></div>
+        <p class="qv-desc" id="qvDesc"></p>
+        <div class="qv-btns">
+          <button class="qv-add" id="qvAdd">Add to Cart</button>
+          <button class="qv-wish" id="qvWish"><i class="far fa-heart"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"><i class="fas fa-mug-hot"></i><span id="toastMsg"></span></div>
+
+<script>
+// ═══ DATA ═══
+const products=[
+  {id:0,name:'Ethiopia Yirgacheffe',cat:'Single Origin',price:899,oldPrice:1099,rating:4.9,reviews:342,img:'https://images.unsplash.com/photo-1510707577719-ae7c14805e3a?w=600&q=80',badge:'bestseller',desc:'Natural process from the birthplace of coffee. Bursting with wild blueberry, jasmine, and brown sugar. Light roast, 250g whole bean.'},
+  {id:1,name:'Ethiopia Sidama',cat:'Single Origin',price:849,oldPrice:null,rating:4.8,reviews:187,img:'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=600&q=80',badge:'new',desc:'Washed process from Sidama zone. Clean and bright with lemon zest, bergamot, and stone fruit. Light-medium roast, 250g.'},
+  {id:2,name:'Kenya AA Kiambu',cat:'Single Origin',price:999,oldPrice:1299,rating:4.9,reviews:215,img:'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&q=80',badge:'sale',desc:'Double-washed AA grade from Kiambu highlands. Intense blackcurrant, tomato acidity, long finish. Medium roast, 250g.'},
+  {id:3,name:'Colombia Huila',cat:'Single Origin',price:849,oldPrice:null,rating:4.8,reviews:178,img:'https://images.unsplash.com/photo-1611854779393-1b2da9d400fe?w=600&q=80',badge:'new',desc:'Washed lot from small Huila farmers. Sweet caramel, red apple, and milk chocolate. Medium roast, 250g whole bean.'},
+  {id:4,name:'Colombia Nariño',cat:'Single Origin',price:929,oldPrice:1199,rating:4.7,reviews:122,img:'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=600&q=80',badge:'sale',desc:'High-altitude washed from Nariño. Crisp citrus acidity, nougat sweetness, clean finish. Light-medium roast, 250g.'},
+  {id:5,name:'Guatemala Huehuetenango',cat:'Single Origin',price:799,oldPrice:null,rating:4.7,reviews:98,img:'https://images.unsplash.com/photo-1442512595331-e89e73853f31?w=600&q=80',badge:'new',desc:'Washed from 1700m altitude in Huehue. Bright stone fruit, milk chocolate, honey sweetness. Medium roast, 250g.'},
+  {id:6,name:'Costa Rica Tarrazú',cat:'Single Origin',price:879,oldPrice:null,rating:4.8,reviews:143,img:'https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=600&q=80',badge:'bestseller',desc:'Honey-process from the famed Tarrazú region. Peach, butterscotch, hazelnut, smooth body. Medium roast, 250g.'},
+  {id:7,name:'Panama Geisha',cat:'Rare & Reserve',price:2499,oldPrice:2999,rating:5.0,reviews:87,img:'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=600&q=80',badge:'sale',desc:'The legendary Geisha variety from Chiriqui highlands. Floral perfume, tropical fruit, tea-like elegance. Light roast, 100g.'},
+  {id:8,name:'Jamaica Blue Mountain',cat:'Rare & Reserve',price:3499,oldPrice:null,rating:4.9,reviews:64,img:'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600&q=80',badge:'new',desc:'Certified Blue Mountain from Wallenford Estate. Silky body, mild sweetness, zero bitterness. Medium roast, 100g.'},
+  {id:9,name:'Yemen Haraaz',cat:'Rare & Reserve',price:1899,oldPrice:2299,rating:4.9,reviews:56,img:'https://images.unsplash.com/photo-1464979681340-bdd28a61699e?w=600&q=80',badge:'sale',desc:'Ancient dry-process mocha from Haraaz mountain villages. Wild fruit, dark chocolate, wine complexity. Dark roast, 150g.'},
+  {id:10,name:'India Coorg Estate',cat:'Single Origin',price:649,oldPrice:799,rating:4.7,reviews:289,img:'https://images.unsplash.com/photo-1559496417-e7f25cb247f3?w=600&q=80',badge:'bestseller',desc:'Washed Arabica from Coorg estate under spice-shade trees. Dark chocolate, pepper spice, full body. Medium-dark, 250g.'},
+  {id:11,name:'India Araku Valley',cat:'Single Origin',price:699,oldPrice:null,rating:4.8,reviews:197,img:'https://images.unsplash.com/photo-1598908314732-07113901949e?w=600&q=80',badge:'new',desc:'Organic tribal-grown Arabica from Andhra highlands. Floral, mild citrus, clean finish. Light roast, 250g.'},
+  {id:12,name:'Monsoon Malabar',cat:'Single Origin',price:749,oldPrice:949,rating:4.7,reviews:263,img:'https://images.unsplash.com/photo-1506619216599-9d16d0903dfd?w=600&q=80',badge:'sale',desc:'Monsoon-seasoned beans from the Malabar coast. Low acidity, earthy musk, bold body. Ideal for filter coffee. 250g.'},
+  {id:13,name:'Sumatra Mandheling',cat:'Single Origin',price:849,oldPrice:null,rating:4.8,reviews:198,img:'https://images.unsplash.com/photo-1497935586351-b67a49e012bf?w=600&q=80',badge:'new',desc:'Wet-hulled Arabica from North Sumatra. Cedar, dark chocolate, and herbal earthiness. Dark roast, 250g.'},
+  {id:14,name:'Indonesia Sulawesi Toraja',cat:'Single Origin',price:929,oldPrice:1149,rating:4.7,reviews:134,img:'https://images.unsplash.com/photo-1511537190424-bbbab87ac5eb?w=600&q=80',badge:'sale',desc:'Wet-hulled from the Toraja highlands. Sweet dark fruit, spice, low acidity, heavy body. Dark roast, 250g.'},
+  {id:15,name:'Vietnam Da Lat',cat:'Single Origin',price:599,oldPrice:null,rating:4.6,reviews:156,img:'https://images.unsplash.com/photo-1541167760496-1628856ab772?w=600&q=80',badge:'new',desc:'Arabica from the cool Da Lat plateau. Mild, chocolatey, hint of fruit sweetness. Medium roast. 250g.'},
+  {id:16,name:'Classic Espresso Blend',cat:'Espresso Blend',price:799,oldPrice:999,rating:4.9,reviews:387,img:'https://images.unsplash.com/photo-1504630083234-14187a9df0f5?w=600&q=80',badge:'bestseller',desc:'Brazil Santos + India Robusta. Rich crema, dark chocolate, hazelnut sweetness. Designed for espresso machines and moka pots. 250g.'},
+  {id:17,name:'Sunrise Breakfast Blend',cat:'Espresso Blend',price:749,oldPrice:null,rating:4.7,reviews:142,img:'https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=600&q=80',badge:'new',desc:'Colombia + Guatemala blend. Balanced, caramel sweetness, medium body — perfect with milk. Filter or espresso. 250g.'},
+  {id:18,name:'Dark Italian Roast',cat:'Espresso Blend',price:699,oldPrice:899,rating:4.8,reviews:223,img:'https://images.unsplash.com/photo-1559525839-8f275eef0639?w=600&q=80',badge:'sale',desc:'Deeply roasted India + Brazil blend. Bittersweet cocoa, molasses, smoky finish. For strong black coffee lovers. 250g.'},
+  {id:19,name:'Cold Brew Concentrate',cat:'Cold Brew',price:549,oldPrice:null,rating:4.8,reviews:178,img:'https://images.unsplash.com/photo-1517701604599-bb29b565090c?w=600&q=80',badge:'new',desc:'Coarsely ground Colombia blend, optimised for 12-hour cold brew immersion. Smooth, low-acid, chocolate-forward. 250g.'},
+  {id:20,name:'Nitro Cold Brew Beans',cat:'Cold Brew',price:649,oldPrice:799,rating:4.7,reviews:112,img:'https://images.unsplash.com/photo-1563911302283-d2bc129e7570?w=600&q=80',badge:'sale',desc:'Dark-roasted Ethiopia + Colombia blend for silky nitro cold brew at home. Creamy body, mocha notes. 250g.'},
+  {id:21,name:'Swiss Water Decaf',cat:'Decaf',price:749,oldPrice:null,rating:4.7,reviews:163,img:'https://images.unsplash.com/photo-1498804103079-a6351b050096?w=600&q=80',badge:'new',desc:'Colombia Huila, chemical-free Swiss Water decaffeination. Full flavour intact — caramel, red apple, milk choc. Medium roast. 250g.'},
+  {id:22,name:'Decaf Espresso Blend',cat:'Decaf',price:699,oldPrice:899,rating:4.6,reviews:98,img:'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&q=80',badge:'sale',desc:'Brazil + Colombia decaf, Swiss Water process. Rich crema, nut and chocolate notes. All the ritual, none of the caffeine. 250g.'},
+  {id:23,name:'Bourbon Natural — El Salvador',cat:'Rare & Reserve',price:1799,oldPrice:2199,rating:4.9,reviews:78,img:'https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=600&q=80',badge:'bestseller',desc:'Red Bourbon variety, natural process from Finca Los Llanitos. Dark cherry, rum raisin, brown sugar complexity. Light-medium, 150g.'}
+];
+
+// STATE
+let cart=[],wishlist=[],recentlyViewed=[],curCat='all',curTag='all',curSort='default',carPos=0;
+
+// RENDER
+function cardHTML(p){
+  const inCart=cart.some(c=>c.id===p.id);
+  const wled=wishlist.includes(p.id);
+  const disc=p.oldPrice?Math.round((1-p.price/p.oldPrice)*100):null;
+  const stars='★'.repeat(Math.floor(p.rating))+'☆'.repeat(5-Math.floor(p.rating));
+  return`<div class="product-card" onclick="handleCard(${p.id})">
+    <div class="prod-img-wrap">
+      <img src="${p.img}" alt="${p.name}" loading="lazy">
+      ${p.badge==='bestseller'?'<span class="prod-badge">Best Seller</span>':p.badge==='new'?'<span class="prod-badge new">New</span>':p.badge==='sale'&&disc?`<span class="prod-badge sale">${disc}% Off</span>`:''}
+      <div class="prod-actions">
+        <button class="prod-act-btn ${wled?'wishlisted':''}" onclick="event.stopPropagation();toggleWL(${p.id})"><i class="${wled?'fas':'far'} fa-heart"></i></button>
+        <button class="prod-act-btn" onclick="event.stopPropagation();openQV(${p.id})"><i class="fas fa-eye"></i></button>
+      </div>
+      <button class="quick-add-bar" onclick="event.stopPropagation();addCart(${p.id})">${inCart?'✓ Added':'Quick Add'}</button>
+    </div>
+    <div class="prod-info">
+      <div class="prod-cat">${p.cat}</div>
+      <div class="prod-name">${p.name}</div>
+      <div class="prod-rating"><span class="stars">${stars}</span><span class="rev-count">(${p.reviews})</span></div>
+      <div class="prod-price-row">
+        <span class="prod-price">₹${p.price.toLocaleString()}</span>
+        ${p.oldPrice?`<span class="prod-old">₹${p.oldPrice.toLocaleString()}</span>`:''}
+        ${disc?`<span class="prod-disc">-${disc}%</span>`:''}
+      </div>
+    </div>
+  </div>`;
+}
+function getList(){
+  let l=[...products];
+  if(curCat!=='all')l=l.filter(p=>p.cat===curCat||p.cat.toLowerCase().includes(curCat.toLowerCase()));
+  if(curTag==='bestseller')l=l.filter(p=>p.badge==='bestseller');
+  else if(curTag==='new')l=l.filter(p=>p.badge==='new');
+  else if(curTag==='sale')l=l.filter(p=>p.badge==='sale');
+  if(curSort==='price-asc')l.sort((a,b)=>a.price-b.price);
+  else if(curSort==='price-desc')l.sort((a,b)=>b.price-a.price);
+  else if(curSort==='rating')l.sort((a,b)=>b.rating-a.rating);
+  return l;
+}
+function renderGrid(){
+  const g=document.getElementById('productGrid');if(!g)return;
+  const l=getList();
+  g.innerHTML=l.length?l.map(cardHTML).join(''):'<div style="grid-column:1/-1;text-align:center;padding:4rem;color:var(--text-muted)"><i class="fas fa-mug-hot" style="font-size:2.5rem;margin-bottom:1rem;display:block;color:rgba(196,126,58,0.2)"></i>No products found</div>';
+}
+function renderBS(){
+  const t=document.getElementById('bsTrack');if(!t)return;
+  t.innerHTML=products.filter(p=>p.badge==='bestseller').map(cardHTML).join('');
+}
+function handleCard(id){addRecent(id);openQV(id);}
+function filterCat(c,btn){curCat=c;document.querySelectorAll('.cat-pill').forEach(el=>el.classList.remove('active'));if(btn)btn.classList.add('active');renderGrid();scrollProds();}
+function filterTag(t,btn){curTag=t;document.querySelectorAll('.ftab').forEach(el=>el.classList.remove('active'));if(btn)btn.classList.add('active');renderGrid();}
+function sortProds(v){curSort=v;renderGrid();}
+function handleSearch(v){
+  const q=v.toLowerCase().trim();
+  if(!q){renderGrid();return;}
+  const g=document.getElementById('productGrid');if(!g)return;
+  g.innerHTML=products.filter(p=>p.name.toLowerCase().includes(q)||p.cat.toLowerCase().includes(q)||p.desc.toLowerCase().includes(q)).map(cardHTML).join('');
+}
+
+// CAROUSEL
+function moveCar(dir){
+  const t=document.getElementById('bsTrack');if(!t)return;
+  const cards=t.querySelectorAll('.product-card');
+  const cw=(cards[0]?.offsetWidth||256)+24;
+  const mx=Math.max(0,(cards.length-3)*cw);
+  carPos=Math.max(0,Math.min(mx,carPos+dir*cw));
+  t.style.transform=`translateX(-${carPos}px)`;
+}
+
+// RECENTLY VIEWED
+function addRecent(id){if(!recentlyViewed.includes(id)){recentlyViewed.unshift(id);if(recentlyViewed.length>6)recentlyViewed.pop();}renderRecent();}
+function renderRecent(){
+  const sec=document.getElementById('recentSec');const g=document.getElementById('recentGrid');if(!sec||!g)return;
+  if(recentlyViewed.length<2){sec.style.display='none';return;}
+  sec.style.display='block';
+  g.innerHTML=recentlyViewed.map(id=>cardHTML(products[id])).join('');
+}
+
+// QUICK VIEW
+function openQV(id){
+  const p=products[id];if(!p)return;
+  const stars='★'.repeat(Math.floor(p.rating))+'☆'.repeat(5-Math.floor(p.rating));
+  document.getElementById('qvImg').src=p.img;
+  document.getElementById('qvCat').textContent=p.cat;
+  document.getElementById('qvName').textContent=p.name;
+  document.getElementById('qvStars').textContent=stars;
+  document.getElementById('qvRevs').textContent=`${p.rating} · ${p.reviews} reviews`;
+  document.getElementById('qvPrice').textContent=`₹${p.price.toLocaleString()}`;
+  document.getElementById('qvOld').textContent=p.oldPrice?`₹${p.oldPrice.toLocaleString()}`:'';
+  document.getElementById('qvDesc').textContent=p.desc;
+  const ab=document.getElementById('qvAdd');ab.onclick=()=>{addCart(id);document.getElementById('qvOverlay').classList.remove('open');document.body.style.overflow='';};
+  const wb=document.getElementById('qvWish');
+  wb.innerHTML=wishlist.includes(id)?'<i class="fas fa-heart" style="color:var(--caramel)"></i>':'<i class="far fa-heart"></i>';
+  wb.onclick=()=>toggleWL(id);
+  document.getElementById('qvOverlay').classList.add('open');document.body.style.overflow='hidden';
+}
+function closeQV(e){if(e&&e.target!==document.getElementById('qvOverlay'))return;document.getElementById('qvOverlay').classList.remove('open');document.body.style.overflow='';}
+
+// CART
+function addCart(id){const p=products[id];if(!p)return;const ex=cart.find(c=>c.id===id);if(ex)ex.qty++;else cart.push({...p,qty:1});updateCartUI();showToast(`${p.name} added to cart`);renderGrid();renderBS();}
+function removeCart(id){cart=cart.filter(c=>c.id!==id);updateCartUI();}
+function updateQty(id,d){const i=cart.find(c=>c.id===id);if(!i)return;i.qty+=d;if(i.qty<=0)removeCart(id);else updateCartUI();}
+function clearCart(){cart=[];updateCartUI();}
+function updateCartUI(){
+  const n=cart.reduce((s,c)=>s+c.qty,0);
+  const b=document.getElementById('cartBadge');b.style.display=n?'flex':'none';b.textContent=n;
+  renderCartBody();
+}
+function renderCartBody(){
+  const b=document.getElementById('cartBody');const s=document.getElementById('cartSub');if(!b)return;
+  if(!cart.length){b.innerHTML='<div class="cart-empty-state"><i class="fas fa-mug-hot"></i><p>Your cart is empty.<br>Add something delicious!</p></div>';if(s)s.textContent='₹0';return;}
+  b.innerHTML=cart.map(c=>`<div class="cart-item"><img class="ci-img" src="${c.img}" alt="${c.name}"><div class="ci-info"><div class="ci-name">${c.name}</div><div class="ci-cat">${c.cat}</div><div class="ci-qty-row"><button class="ci-qty-btn" onclick="updateQty(${c.id},-1)">−</button><span class="ci-qty-num">${c.qty}</span><button class="ci-qty-btn" onclick="updateQty(${c.id},1)">+</button></div></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:0.4rem"><span class="ci-price">₹${(c.price*c.qty).toLocaleString()}</span><button class="ci-remove" onclick="removeCart(${c.id})"><i class="fas fa-trash-alt"></i></button></div></div>`).join('');
+  const t=cart.reduce((s,c)=>s+c.price*c.qty,0);if(s)s.textContent=`₹${t.toLocaleString()}`;
+}
+function openCart(){document.getElementById('cartOverlay').classList.add('open');document.getElementById('cartSidebar').classList.add('open');document.body.style.overflow='hidden';renderCartBody();}
+function closeCart(){document.getElementById('cartOverlay').classList.remove('open');document.getElementById('cartSidebar').classList.remove('open');document.body.style.overflow='';}
+
+// CHECKOUT
+function goCheckout(){
+  if(!cart.length){showToast('Cart is empty!');return;}
+  closeCart();
+  const ci=document.getElementById('coItems');const ct=document.getElementById('coTotals');
+  ci.innerHTML=cart.map(c=>`<div class="co-item"><img src="${c.img}" alt="${c.name}"><div class="co-item-info"><div class="co-item-name">${c.name}</div><div class="co-item-qty">× ${c.qty}</div></div><span class="co-item-price">₹${(c.price*c.qty).toLocaleString()}</span></div>`).join('');
+  const sub=cart.reduce((s,c)=>s+c.price*c.qty,0);const ship=sub>=999?0:99;
+  ct.innerHTML=`<div class="co-total-row"><span>Subtotal</span><span>₹${sub.toLocaleString()}</span></div><div class="co-total-row"><span>Shipping</span><span>${ship?'₹'+ship:'Free'}</span></div><div class="co-total-row final"><span>Total</span><span>₹${(sub+ship).toLocaleString()}</span></div>`;
+  showPage('checkout');window.scrollTo(0,0);
+}
+function placeOrder(){
+  const sub=cart.reduce((s,c)=>s+c.price*c.qty,0);const ship=sub>=999?0:99;
+  const oid='BH-'+Math.floor(100000+Math.random()*900000);
+  document.getElementById('sucOrderId').textContent=`Order ${oid}`;
+  document.getElementById('sucDetails').innerHTML=`<div class="suc-row"><span>Items (${cart.reduce((s,c)=>s+c.qty,0)})</span><span>₹${sub.toLocaleString()}</span></div><div class="suc-row"><span>Shipping</span><span>${ship?'₹'+ship:'Free'}</span></div><div class="suc-row"><span>Estimated Delivery</span><span>3–5 Business Days</span></div><div class="suc-row"><span>Total Paid</span><span>₹${(sub+ship).toLocaleString()}</span></div>`;
+  showPage('success');window.scrollTo(0,0);clearCart();
+}
+
+// WISHLIST
+function toggleWL(id){
+  const i=wishlist.indexOf(id);const p=products[id];
+  if(i>-1){wishlist.splice(i,1);showToast(`${p.name} removed from wishlist`);}else{wishlist.push(id);showToast(`${p.name} wishlisted ♥`);}
+  const wc=document.getElementById('wlCount');wc.style.display=wishlist.length?'flex':'none';wc.textContent=wishlist.length;
+  renderGrid();renderBS();
+}
+
+// FAQ
+const faqs=[
+  {q:'How fresh are your roasts?',a:'Every order is roasted within 48 hours of shipment. We never sell pre-roasted stock sitting on shelves. You receive beans at peak freshness, typically 3–7 days post-roast — the ideal window to start brewing.'},
+  {q:'What does "single origin" mean?',a:'Single origin means the coffee comes from one specific country, region, farm, or cooperative — not blended with beans from elsewhere. This lets the unique terroir (soil, altitude, climate) shine through in the cup.'},
+  {q:'Do you offer subscriptions?',a:'Yes! Our subscription delivers freshly roasted beans every 2 or 4 weeks. You choose the origin, roast level, grind setting, and delivery frequency. We also offer a rotating "Origin of the Month" option to discover new coffees. Cancel or pause anytime.'},
+  {q:'Do you ship across India?',a:'Yes, we ship to all major cities and most pincodes across India. Free shipping on orders above ₹999. Express options available at checkout. Most orders arrive within 3–5 business days.'},
+  {q:'Can I get whole beans or ground?',a:'Absolutely. Choose whole bean, or specify your grind: espresso, moka pot, French press, pour-over, Aeropress, or cold brew. We grind fresh to your specification on the day of roasting.'},
+  {q:'What is the difference between light, medium, and dark roast?',a:'Light roasts preserve the most origin character — floral, fruity, acidic notes. Medium roasts balance origin with roast — caramel, nut, chocolate. Dark roasts emphasise roast flavours — bittersweet, smoky, bold. We recommend the roast level on every product page.'},
+];
+function renderFAQ(){
+  const c=document.getElementById('faqList');if(!c)return;
+  c.innerHTML=faqs.map((f,i)=>`<div class="faq-item" id="faq${i}"><div class="faq-q" onclick="toggleFAQ(${i})"><h4>${f.q}</h4><i class="fas fa-plus faq-ico"></i></div><div class="faq-ans"><p>${f.a}</p></div></div>`).join('');
+}
+function toggleFAQ(i){const el=document.getElementById('faq'+i);const was=el.classList.contains('open');document.querySelectorAll('.faq-item').forEach(e=>e.classList.remove('open'));if(!was)el.classList.add('open');}
+
+// TOAST
+let tt;function showToast(m){const t=document.getElementById('toast');document.getElementById('toastMsg').textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),2800);}
+
+// NAV
+function subNewsletter(){showToast('Welcome to the BrewHaven circle! ☕');}
+function showPage(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));const pg=document.getElementById(id);if(pg)pg.classList.add('active');}
+function scrollProds(){document.getElementById('products')?.scrollIntoView({behavior:'smooth'});}
+function scrollToSec(id){document.getElementById(id)?.scrollIntoView({behavior:'smooth'});}
+function openMobNav(){document.getElementById('mobNav').classList.add('open');document.body.style.overflow='hidden';}
+function closeMobNav(){document.getElementById('mobNav').classList.remove('open');document.body.style.overflow='';}
+window.addEventListener('scroll',()=>{const h=document.getElementById('bhHeader');if(h)h.classList.toggle('scrolled',window.scrollY>80);});
+
+// INIT
+document.addEventListener('DOMContentLoaded',()=>{renderGrid();renderBS();renderFAQ();});
+</script>
+</body>
+</html>
