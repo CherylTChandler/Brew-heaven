@@ -390,6 +390,9 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9998;
 .fade-up{animation:fadeUp 0.7s ease both;}
 .d1{animation-delay:0.1s;}.d2{animation-delay:0.2s;}.d3{animation-delay:0.3s;}.d4{animation-delay:0.4s;}
 </style>
+  <!-- 100% privacy-first analytics -->
+<script async src="https://scripts.simpleanalyticscdn.com/latest.js"></script>
+
 </head>
 <body>
 
